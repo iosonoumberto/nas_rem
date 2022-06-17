@@ -1,0 +1,329 @@
+<configuration-text>
+## Last changed: 2022-06-16 10:57:19 PDT
+version 18.4R1.8;
+groups {
+    member0 {
+        system {
+            host-name NATMI;
+            backup-router 10.93.31.254;
+        }
+        interfaces {
+            fxp0 {
+                unit 0 {
+                    family inet {
+                        address 10.93.16.194/20;
+                    }
+                }
+            }
+        }
+    }
+    global {
+        system {
+            login {
+                class wheel {
+                    permissions snmp;
+                }
+                user regress {
+                    uid 928;
+                    class superuser;
+                    shell csh;
+                    authentication {
+                        encrypted-password "$1$kPU..$w.4FGRAGanJ8U4Yq6sbj7.";
+                    }
+                }
+                user remote {
+                    uid 2000;
+                    class super-user;
+                }
+            }
+            root-authentication {
+                encrypted-password "$1$ZUlES4dp$OUwWo1g7cLoV/aMWpHUnC/";
+            }
+            services {
+                finger;
+                ftp;
+                rlogin;
+                ssh {
+                    root-login allow;
+                }
+                telnet;
+                xnm-clear-text;
+                netconf {
+                    ssh;
+                }
+            }
+            domain-name englab.juniper.net;
+            domain-search [ englab.juniper.net juniper.net jnpr.net spglab.juniper.net ];
+            time-zone America/Los_Angeles;
+            debugger-on-break;
+            dump-on-panic;
+            authentication-order [ password radius ];
+            name-server {
+                10.102.149.51;
+                10.102.149.52;
+            }
+            radius-server {
+                192.168.69.162 secret "$9$iHfz9Cu0BRQznCApIRSreWxNVw2GjkKM4JGimP";
+                192.168.64.10 secret "$9$TQ/t1IcSrKAt0IRheK8X7VYgaZDm5zNdiqmTn6";
+                192.168.4.240 secret "$9$GqUqf3nCApOPfQn690ORhSeWL7-boZDylsgoGHk";
+            }
+            syslog {
+                host log {
+                    kernel info;
+                    any notice;
+                    pfe info;
+                    interactive-commands any;
+                }
+                file messages {
+                    kernel info;
+                    any notice;
+                    authorization info;
+                    pfe info;
+                    archive world-readable;
+                }
+                file security {
+                    interactive-commands any;
+                    archive world-readable;
+                }
+            }
+            processes {
+                routing enable;
+                ntp enable;
+                management enable;
+                watchdog enable;
+                snmp enable;
+                inet-process enable;
+                mib-process enable;
+            }
+            ntp {
+                boot-server 172.21.200.60;
+                server 172.21.200.60;
+                server 172.29.131.60;
+                server 172.29.135.60;
+            }
+        }
+        chassis {
+            dump-on-panic;
+        }
+        snmp {
+            location "Systest lab";
+            contact "Jay Lloyd";
+            interface fxp0.0;
+            community public {
+                authorization read-only;
+            }
+            community private {
+                authorization read-write;
+            }
+        }
+        routing-options {
+            static {
+                /* corperate and alpha net */
+                route 172.16.0.0/12 {
+                    next-hop 10.93.31.254;
+                    retain;
+                    no-readvertise;
+                }
+                /* eng lab nets */
+                route 192.168.0.0/16 {
+                    next-hop 10.93.31.254;
+                    retain;
+                    no-readvertise;
+                }
+                route 10.0.0.0/8 {
+                    next-hop 10.93.31.254;
+                    retain;
+                    no-readvertise;
+                }
+                /* ntp server */
+                route 66.129.255.62/32 {
+                    next-hop 10.93.31.254;
+                    retain;
+                    no-readvertise;
+                }
+            }
+        }
+    }
+}
+apply-groups [ global member0 ];
+system {
+    ports {
+        console log-out-on-disconnect;
+    }
+}
+chassis {
+    fpc 0 {
+        pic 0 {
+            inline-services {
+                bandwidth 10g;
+            }
+        }
+    }
+}
+services {
+    service-set APN {
+        nat-rule-sets NAT-RULE-SET;
+        next-hop-service {
+            inside-service-interface si-0/0/0.1;
+            outside-service-interface si-0/0/0.2;
+        }
+    }
+    nat {
+        pool POOL-1 {
+            address 5.170.0.0/24;
+        }
+        pool POOL-2 {
+            address 5.171.0.0/24;
+        }
+        rule NAT-RULE-1 {
+            match-direction input;
+            term NAT1 {
+                from {
+                    source-address {
+                        10.64.0.0/24;
+                    }
+                }
+                then {
+                    translated {
+                        source-pool POOL-1;
+                        translation-type {
+                            basic-nat44;
+                        }
+                    }
+                }
+            }
+            term NAT2 {
+                from {
+                    source-address {
+                        10.70.0.0/24;
+                    }
+                }
+                then {
+                    translated {
+                        source-pool POOL-2;
+                        translation-type {
+                            basic-nat44;
+                        }
+                    }
+                }
+            }
+        }
+        rule-set NAT-RULE-SET {
+            rule NAT-RULE-1;
+        }
+    }
+}
+interfaces {
+    ge-0/0/0 {
+        vlan-tagging;
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 192.168.71.0/31;
+            }
+        }
+        unit 200 {
+            vlan-id 200;
+            family inet {
+                address 192.168.72.0/31;
+            }
+        }
+    }
+    si-0/0/0 {
+        unit 1 {
+            family inet;
+            service-domain inside;
+        }
+        unit 2 {
+            family inet;
+            service-domain outside;
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 6.6.6.6/32;
+            }
+        }
+    }
+}
+policy-options {
+    prefix-list nat-pools {
+        5.170.0.0/24;
+        5.171.0.0/24;
+    }
+    policy-statement EXP-DEF {
+        term def {
+            from {
+                protocol static;
+                route-filter 0.0.0.0/0 exact;
+            }
+            then accept;
+        }
+        then reject;
+    }
+    policy-statement EXP-RR {
+        term POOLS {
+            from {
+                protocol static;
+                prefix-list-filter nat-pools exact;
+            }
+            then accept;
+        }
+        then reject;
+    }
+}
+routing-instances {
+    APN {
+        instance-type virtual-router;
+        interface si-0/0/0.1;
+        interface ge-0/0/0.100;
+        routing-options {
+            static {
+                route 0.0.0.0/0 next-hop si-0/0/0.1;
+            }
+            autonomous-system 65100;
+        }
+        protocols {
+            bgp {
+                group SH {
+                    type external;
+                    export EXP-DEF;
+                    peer-as 65200;
+                    neighbor 192.168.71.1;
+                }
+            }
+        }
+    }
+}
+routing-options {
+    static {
+        route 0.0.0.0/0 next-hop 192.168.72.1;
+    }
+    router-id 6.6.6.6;
+    autonomous-system 3269;
+}
+protocols {
+    bgp {
+        group RR {
+            type internal;
+            local-address 6.6.6.6;
+            family inet {
+                unicast;
+            }
+            export EXP-RR;
+            neighbor 10.10.10.10;
+        }
+    }
+    ospf {
+        area 0.0.0.0 {
+            interface ge-0/0/0.200 {
+                interface-type p2p;
+            }
+            interface lo0.0 {
+                passive;
+            }
+        }
+    }
+}
+</configuration-text>

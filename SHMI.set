@@ -1,0 +1,172 @@
+<configuration-set>
+set version 18.4R1.8
+set groups member0 system host-name SHMI
+set groups member0 system backup-router 10.93.31.254
+set groups member0 interfaces fxp0 unit 0 family inet address 10.93.31.106/20
+set groups global system login class wheel permissions snmp
+set groups global system login user regress uid 928
+set groups global system login user regress class superuser
+set groups global system login user regress shell csh
+set groups global system login user regress authentication encrypted-password "$1$kPU..$w.4FGRAGanJ8U4Yq6sbj7."
+set groups global system login user remote uid 2000
+set groups global system login user remote class super-user
+set groups global system root-authentication encrypted-password "$1$ZUlES4dp$OUwWo1g7cLoV/aMWpHUnC/"
+set groups global system services finger
+set groups global system services ftp
+set groups global system services rlogin
+set groups global system services ssh root-login allow
+set groups global system services telnet
+set groups global system services xnm-clear-text
+set groups global system services netconf ssh
+set groups global system domain-name englab.juniper.net
+set groups global system domain-search englab.juniper.net
+set groups global system domain-search juniper.net
+set groups global system domain-search jnpr.net
+set groups global system domain-search spglab.juniper.net
+set groups global system time-zone America/Los_Angeles
+set groups global system debugger-on-break
+set groups global system dump-on-panic
+set groups global system authentication-order password
+set groups global system authentication-order radius
+set groups global system name-server 10.102.149.51
+set groups global system name-server 10.102.149.52
+set groups global system radius-server 192.168.69.162 secret "$9$iHfz9Cu0BRQznCApIRSreWxNVw2GjkKM4JGimP"
+set groups global system radius-server 192.168.64.10 secret "$9$TQ/t1IcSrKAt0IRheK8X7VYgaZDm5zNdiqmTn6"
+set groups global system radius-server 192.168.4.240 secret "$9$GqUqf3nCApOPfQn690ORhSeWL7-boZDylsgoGHk"
+set groups global system syslog host log kernel info
+set groups global system syslog host log any notice
+set groups global system syslog host log pfe info
+set groups global system syslog host log interactive-commands any
+set groups global system syslog file messages kernel info
+set groups global system syslog file messages any notice
+set groups global system syslog file messages authorization info
+set groups global system syslog file messages pfe info
+set groups global system syslog file messages archive world-readable
+set groups global system syslog file security interactive-commands any
+set groups global system syslog file security archive world-readable
+set groups global system processes routing enable
+set groups global system processes ntp enable
+set groups global system processes management enable
+set groups global system processes watchdog enable
+set groups global system processes snmp enable
+set groups global system processes inet-process enable
+set groups global system processes mib-process enable
+set groups global system ntp boot-server 172.21.200.60
+set groups global system ntp server 172.21.200.60
+set groups global system ntp server 172.29.131.60
+set groups global system ntp server 172.29.135.60
+set groups global chassis dump-on-panic
+set groups global snmp location "Systest lab"
+set groups global snmp contact "Jay Lloyd"
+set groups global snmp interface fxp0.0
+set groups global snmp community public authorization read-only
+set groups global snmp community private authorization read-write
+set groups global routing-options static route 172.16.0.0/12 next-hop 10.93.31.254
+set groups global routing-options static route 172.16.0.0/12 retain
+set groups global routing-options static route 172.16.0.0/12 no-readvertise
+set groups global routing-options static route 192.168.0.0/16 next-hop 10.93.31.254
+set groups global routing-options static route 192.168.0.0/16 retain
+set groups global routing-options static route 192.168.0.0/16 no-readvertise
+set groups global routing-options static route 10.0.0.0/8 next-hop 10.93.31.254
+set groups global routing-options static route 10.0.0.0/8 retain
+set groups global routing-options static route 10.0.0.0/8 no-readvertise
+set groups global routing-options static route 66.129.255.62/32 next-hop 10.93.31.254
+set groups global routing-options static route 66.129.255.62/32 retain
+set groups global routing-options static route 66.129.255.62/32 no-readvertise
+set apply-groups global
+set apply-groups member0
+set system ports console log-out-on-disconnect
+set chassis fpc 0 pic 0 tunnel-services bandwidth 10g
+set interfaces ge-0/0/0 unit 0 family inet address 192.168.5.0/31
+set interfaces ge-0/0/0 unit 0 family mpls
+set interfaces lt-0/0/0 unit 1 encapsulation ethernet
+set interfaces lt-0/0/0 unit 1 peer-unit 2
+set interfaces lt-0/0/0 unit 1 family inet address 172.30.1.1/31
+set interfaces lt-0/0/0 unit 2 encapsulation ethernet
+set interfaces lt-0/0/0 unit 2 peer-unit 1
+set interfaces lt-0/0/0 unit 2 family inet address 172.30.1.0/31
+set interfaces ge-0/0/1 unit 0 family inet address 192.168.6.1/31
+set interfaces ge-0/0/2 vlan-tagging
+set interfaces ge-0/0/2 unit 100 vlan-id 100
+set interfaces ge-0/0/2 unit 100 family inet address 192.168.71.1/31
+set interfaces ge-0/0/2 unit 200 vlan-id 200
+set interfaces ge-0/0/2 unit 200 family inet address 192.168.72.1/31
+set interfaces lo0 unit 0 family inet address 4.4.4.4/32
+set interfaces lo0 unit 888 family inet address 99.99.99.99/32
+set policy-options prefix-list P2P_CGNAT 192.168.71.0/31
+set policy-options prefix-list NAS_POOL 10.70.0.0/24
+set policy-options prefix-list NAS_POOL 10.72.0.0/24
+set policy-options policy-statement APN_PRIVATE_EXP term default from protocol bgp
+set policy-options policy-statement APN_PRIVATE_EXP term default from route-filter 0.0.0.0/0 exact
+set policy-options policy-statement APN_PRIVATE_EXP term default then community set CGNAT_VPN
+set policy-options policy-statement APN_PRIVATE_EXP term default then accept
+set policy-options policy-statement APN_PRIVATE_EXP term pools from protocol bgp
+set policy-options policy-statement APN_PRIVATE_EXP term pools from community NAS_POOL
+set policy-options policy-statement APN_PRIVATE_EXP term pools then community set MGMT_SPOKE_EXP
+set policy-options policy-statement APN_PRIVATE_EXP term pools then community add CGNAT_VPN
+set policy-options policy-statement APN_PRIVATE_EXP term pools then accept
+set policy-options policy-statement APN_PRIVATE_EXP term direct_p2p from protocol direct
+set policy-options policy-statement APN_PRIVATE_EXP term direct_p2p from prefix-list-filter P2P_CGNAT exact
+set policy-options policy-statement APN_PRIVATE_EXP term direct_p2p then community set CGNAT_VPN
+set policy-options policy-statement APN_PRIVATE_EXP term direct_p2p then accept
+set policy-options policy-statement APN_PRIVATE_EXP then reject
+set policy-options policy-statement APN_PRIVATE_IMP term rem_pools from protocol bgp
+set policy-options policy-statement APN_PRIVATE_IMP term rem_pools from community CGNAT_VPN
+set policy-options policy-statement APN_PRIVATE_IMP term rem_pools then accept
+set policy-options policy-statement APN_PRIVATE_IMP term mgmt_spoke from protocol bgp
+set policy-options policy-statement APN_PRIVATE_IMP term mgmt_spoke from community MGMT_SPOKE_IMP
+set policy-options policy-statement APN_PRIVATE_IMP term mgmt_spoke then accept
+set policy-options policy-statement APN_PRIVATE_IMP then reject
+set policy-options policy-statement NAS_POOL term remote_pools from protocol bgp
+set policy-options policy-statement NAS_POOL term remote_pools from community CGNAT_VPN
+set policy-options policy-statement NAS_POOL term remote_pools then accept
+set policy-options policy-statement NAS_POOL term local_pools from protocol bgp
+set policy-options policy-statement NAS_POOL term local_pools from community NAS_POOL
+set policy-options policy-statement NAS_POOL term local_pools then accept
+set policy-options policy-statement NAS_POOL then reject
+set policy-options policy-statement ONLY_DEFAULT term ok from protocol bgp
+set policy-options policy-statement ONLY_DEFAULT term ok from route-filter 0.0.0.0/0 exact
+set policy-options policy-statement ONLY_DEFAULT term ok then accept
+set policy-options policy-statement ONLY_DEFAULT then reject
+set policy-options community CGNAT_VPN members target:3269:1234
+set policy-options community MGMT_SPOKE_EXP members target:3269:2000
+set policy-options community MGMT_SPOKE_IMP members target:3269:1000
+set policy-options community NAS_POOL members 3269:1234
+set routing-instances APN_PRIVATE instance-type vrf
+set routing-instances APN_PRIVATE interface ge-0/0/1.0
+set routing-instances APN_PRIVATE interface ge-0/0/2.100
+set routing-instances APN_PRIVATE route-distinguisher 4.4.4.4:101
+set routing-instances APN_PRIVATE vrf-import APN_PRIVATE_IMP
+set routing-instances APN_PRIVATE vrf-export APN_PRIVATE_EXP
+set routing-instances APN_PRIVATE vrf-table-label
+set routing-instances APN_PRIVATE routing-options flow term-order standard
+set routing-instances APN_PRIVATE routing-options autonomous-system 65200
+set routing-instances APN_PRIVATE protocols bgp group CGN type external
+set routing-instances APN_PRIVATE protocols bgp group CGN import ONLY_DEFAULT
+set routing-instances APN_PRIVATE protocols bgp group CGN export NAS_POOL
+set routing-instances APN_PRIVATE protocols bgp group CGN peer-as 65100
+set routing-instances APN_PRIVATE protocols bgp group CGN neighbor 192.168.71.0
+set routing-instances APN_PRIVATE protocols bgp group NAS type external
+set routing-instances APN_PRIVATE protocols bgp group NAS import NAS_POOL
+set routing-instances APN_PRIVATE protocols bgp group NAS export ONLY_DEFAULT
+set routing-instances APN_PRIVATE protocols bgp group NAS peer-as 65400
+set routing-instances APN_PRIVATE protocols bgp group NAS neighbor 192.168.6.0
+set routing-instances WEB instance-type virtual-router
+set routing-instances WEB interface lt-0/0/0.2
+set routing-instances WEB interface lo0.888
+set routing-instances WEB routing-options static route 0.0.0.0/0 next-hop 172.30.1.1
+set routing-options static route 99.99.99.99/32 next-hop 172.30.1.0
+set routing-options router-id 4.4.4.4
+set routing-options autonomous-system 3269
+set protocols ldp interface ge-0/0/0.0
+set protocols ldp interface lo0.0
+set protocols bgp group RR type internal
+set protocols bgp group RR local-address 4.4.4.4
+set protocols bgp group RR family inet unicast
+set protocols bgp group RR family inet-vpn unicast
+set protocols bgp group RR neighbor 10.10.10.10
+set protocols ospf area 0.0.0.0 interface ge-0/0/0.0 interface-type p2p
+set protocols ospf area 0.0.0.0 interface lo0.0 passive
+set protocols ospf area 0.0.0.0 interface ge-0/0/2.200 interface-type p2p
+set protocols mpls interface ge-0/0/0.0
+</configuration-set>

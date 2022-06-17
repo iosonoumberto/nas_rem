@@ -1,0 +1,132 @@
+<configuration-set>
+set version 18.4R1.8
+set groups member0 system host-name NATMI
+set groups member0 system backup-router 10.93.31.254
+set groups member0 interfaces fxp0 unit 0 family inet address 10.93.16.194/20
+set groups global system login class wheel permissions snmp
+set groups global system login user regress uid 928
+set groups global system login user regress class superuser
+set groups global system login user regress shell csh
+set groups global system login user regress authentication encrypted-password "$1$kPU..$w.4FGRAGanJ8U4Yq6sbj7."
+set groups global system login user remote uid 2000
+set groups global system login user remote class super-user
+set groups global system root-authentication encrypted-password "$1$ZUlES4dp$OUwWo1g7cLoV/aMWpHUnC/"
+set groups global system services finger
+set groups global system services ftp
+set groups global system services rlogin
+set groups global system services ssh root-login allow
+set groups global system services telnet
+set groups global system services xnm-clear-text
+set groups global system services netconf ssh
+set groups global system domain-name englab.juniper.net
+set groups global system domain-search englab.juniper.net
+set groups global system domain-search juniper.net
+set groups global system domain-search jnpr.net
+set groups global system domain-search spglab.juniper.net
+set groups global system time-zone America/Los_Angeles
+set groups global system debugger-on-break
+set groups global system dump-on-panic
+set groups global system authentication-order password
+set groups global system authentication-order radius
+set groups global system name-server 10.102.149.51
+set groups global system name-server 10.102.149.52
+set groups global system radius-server 192.168.69.162 secret "$9$iHfz9Cu0BRQznCApIRSreWxNVw2GjkKM4JGimP"
+set groups global system radius-server 192.168.64.10 secret "$9$TQ/t1IcSrKAt0IRheK8X7VYgaZDm5zNdiqmTn6"
+set groups global system radius-server 192.168.4.240 secret "$9$GqUqf3nCApOPfQn690ORhSeWL7-boZDylsgoGHk"
+set groups global system syslog host log kernel info
+set groups global system syslog host log any notice
+set groups global system syslog host log pfe info
+set groups global system syslog host log interactive-commands any
+set groups global system syslog file messages kernel info
+set groups global system syslog file messages any notice
+set groups global system syslog file messages authorization info
+set groups global system syslog file messages pfe info
+set groups global system syslog file messages archive world-readable
+set groups global system syslog file security interactive-commands any
+set groups global system syslog file security archive world-readable
+set groups global system processes routing enable
+set groups global system processes ntp enable
+set groups global system processes management enable
+set groups global system processes watchdog enable
+set groups global system processes snmp enable
+set groups global system processes inet-process enable
+set groups global system processes mib-process enable
+set groups global system ntp boot-server 172.21.200.60
+set groups global system ntp server 172.21.200.60
+set groups global system ntp server 172.29.131.60
+set groups global system ntp server 172.29.135.60
+set groups global chassis dump-on-panic
+set groups global snmp location "Systest lab"
+set groups global snmp contact "Jay Lloyd"
+set groups global snmp interface fxp0.0
+set groups global snmp community public authorization read-only
+set groups global snmp community private authorization read-write
+set groups global routing-options static route 172.16.0.0/12 next-hop 10.93.31.254
+set groups global routing-options static route 172.16.0.0/12 retain
+set groups global routing-options static route 172.16.0.0/12 no-readvertise
+set groups global routing-options static route 192.168.0.0/16 next-hop 10.93.31.254
+set groups global routing-options static route 192.168.0.0/16 retain
+set groups global routing-options static route 192.168.0.0/16 no-readvertise
+set groups global routing-options static route 10.0.0.0/8 next-hop 10.93.31.254
+set groups global routing-options static route 10.0.0.0/8 retain
+set groups global routing-options static route 10.0.0.0/8 no-readvertise
+set groups global routing-options static route 66.129.255.62/32 next-hop 10.93.31.254
+set groups global routing-options static route 66.129.255.62/32 retain
+set groups global routing-options static route 66.129.255.62/32 no-readvertise
+set apply-groups global
+set apply-groups member0
+set system ports console log-out-on-disconnect
+set chassis fpc 0 pic 0 inline-services bandwidth 10g
+set services service-set APN nat-rule-sets NAT-RULE-SET
+set services service-set APN next-hop-service inside-service-interface si-0/0/0.1
+set services service-set APN next-hop-service outside-service-interface si-0/0/0.2
+set services nat pool POOL-1 address 5.170.0.0/24
+set services nat pool POOL-2 address 5.171.0.0/24
+set services nat rule NAT-RULE-1 match-direction input
+set services nat rule NAT-RULE-1 term NAT1 from source-address 10.64.0.0/24
+set services nat rule NAT-RULE-1 term NAT1 then translated source-pool POOL-1
+set services nat rule NAT-RULE-1 term NAT1 then translated translation-type basic-nat44
+set services nat rule NAT-RULE-1 term NAT2 from source-address 10.70.0.0/24
+set services nat rule NAT-RULE-1 term NAT2 then translated source-pool POOL-2
+set services nat rule NAT-RULE-1 term NAT2 then translated translation-type basic-nat44
+set services nat rule-set NAT-RULE-SET rule NAT-RULE-1
+set interfaces ge-0/0/0 vlan-tagging
+set interfaces ge-0/0/0 unit 100 vlan-id 100
+set interfaces ge-0/0/0 unit 100 family inet address 192.168.71.0/31
+set interfaces ge-0/0/0 unit 200 vlan-id 200
+set interfaces ge-0/0/0 unit 200 family inet address 192.168.72.0/31
+set interfaces si-0/0/0 unit 1 family inet
+set interfaces si-0/0/0 unit 1 service-domain inside
+set interfaces si-0/0/0 unit 2 family inet
+set interfaces si-0/0/0 unit 2 service-domain outside
+set interfaces lo0 unit 0 family inet address 6.6.6.6/32
+set policy-options prefix-list nat-pools 5.170.0.0/24
+set policy-options prefix-list nat-pools 5.171.0.0/24
+set policy-options policy-statement EXP-DEF term def from protocol static
+set policy-options policy-statement EXP-DEF term def from route-filter 0.0.0.0/0 exact
+set policy-options policy-statement EXP-DEF term def then accept
+set policy-options policy-statement EXP-DEF then reject
+set policy-options policy-statement EXP-RR term POOLS from protocol static
+set policy-options policy-statement EXP-RR term POOLS from prefix-list-filter nat-pools exact
+set policy-options policy-statement EXP-RR term POOLS then accept
+set policy-options policy-statement EXP-RR then reject
+set routing-instances APN instance-type virtual-router
+set routing-instances APN interface si-0/0/0.1
+set routing-instances APN interface ge-0/0/0.100
+set routing-instances APN routing-options static route 0.0.0.0/0 next-hop si-0/0/0.1
+set routing-instances APN routing-options autonomous-system 65100
+set routing-instances APN protocols bgp group SH type external
+set routing-instances APN protocols bgp group SH export EXP-DEF
+set routing-instances APN protocols bgp group SH peer-as 65200
+set routing-instances APN protocols bgp group SH neighbor 192.168.71.1
+set routing-options static route 0.0.0.0/0 next-hop 192.168.72.1
+set routing-options router-id 6.6.6.6
+set routing-options autonomous-system 3269
+set protocols bgp group RR type internal
+set protocols bgp group RR local-address 6.6.6.6
+set protocols bgp group RR family inet unicast
+set protocols bgp group RR export EXP-RR
+set protocols bgp group RR neighbor 10.10.10.10
+set protocols ospf area 0.0.0.0 interface ge-0/0/0.200 interface-type p2p
+set protocols ospf area 0.0.0.0 interface lo0.0 passive
+</configuration-set>
